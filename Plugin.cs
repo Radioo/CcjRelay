@@ -80,6 +80,7 @@ namespace CcjRelay {
         public const string NetworkingModulesControler  = "NetworkingModulesControler";
         public const string NetworkingModulesUseCase    = "NetworkingModulesUseCase";
         public const string NetworkingModulesDataAccess = "NetworkingModulesDataAccess";
+        public const string XrpcMethodMatchMake         = "UJKNET.UjkXrpcModule+XrpcMethodMatchMake";
 
         public static Type Resolve(string name) =>
             AccessTools.TypeByName(name)
@@ -87,6 +88,23 @@ namespace CcjRelay {
 
         public static MethodBase Method(string typeName, string methodName, Type[] paramTypes = null) =>
             AccessTools.Method(Resolve(typeName), methodName, paramTypes);
+    }
+
+    public static class MatchmakeSentinel {
+        public const string Globalip   = "0.0.0.0";
+        public const int    Globalport = 0;
+    }
+
+    [HarmonyPatch]
+    static class P_MatchMake_AnnounceRelayPlugin {
+        static MethodBase TargetMethod() => GameTypes.Method(GameTypes.XrpcMethodMatchMake, "Request");
+
+        [HarmonyPrefix]
+        static void Prefix(ref string globalip, ref int globalport) {
+            if (!CcjRelayPlugin.RelayEnabled.Value) return;
+            globalip   = MatchmakeSentinel.Globalip;
+            globalport = MatchmakeSentinel.Globalport;
+        }
     }
 
     [HarmonyPatch]
