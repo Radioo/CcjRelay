@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <AssemblyName>CcjRelay</AssemblyName>
+    <RootNamespace>CcjRelay</RootNamespace>
+    <Nullable>disable</Nullable>
+    <NoWarn>CS0436;NU1701</NoWarn>
+
+    <Version>0.4.6</Version>
+    <PluginGuid>io.ccj-relay-plugin</PluginGuid>
+    <PluginName>CCJ Relay</PluginName>
+    <Description>BepInEx plugin: opens a userspace UDP forwarder on the CCJ host so remote players can connect through a generic UDP relay server, regardless of NAT type.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="UnityEngine.Modules" Version="2020.3.33" IncludeAssets="compile" />
+  </ItemGroup>
+
+  <Target Name="GeneratePluginInfo" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <GeneratedPluginInfoPath>$(IntermediateOutputPath)PluginInfo.g.cs</GeneratedPluginInfoPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <_PluginInfoLines Include="namespace CcjRelay { static class PluginInfo {" />
+      <_PluginInfoLines Include="    public const string Guid    = &quot;$(PluginGuid)&quot;%3B" />
+      <_PluginInfoLines Include="    public const string Name    = &quot;$(PluginName)&quot;%3B" />
+      <_PluginInfoLines Include="    public const string Version = &quot;$(Version)&quot;%3B" />
+      <_PluginInfoLines Include="} }" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(GeneratedPluginInfoPath)" Lines="@(_PluginInfoLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(GeneratedPluginInfoPath)" />
+    </ItemGroup>
+  </Target>
+
+</Project>
